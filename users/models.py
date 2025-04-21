@@ -3,14 +3,20 @@ from django.db import models
 
 
 class User(AbstractUser):
-    email = models.EmailField(unique=True, verbose_name='Email')
-    phone = models.CharField(max_length=15, blank=True, null=True, verbose_name='Номер телефона',
-                                    help_text='Необязательное поле. Введите ваш номер телефона.')
-    city = models.CharField(max_length=30, blank=True, null=True, verbose_name='Город')
-    avatar = models.ImageField(upload_to='avatar/', blank=True, null=True, verbose_name='Аватар',
-                               help_text='Загрузите изображение.')
+    email = models.EmailField(unique=True, verbose_name="Email")
+    phone = models.CharField(
+        max_length=15,
+        blank=True,
+        null=True,
+        verbose_name="Номер телефона",
+        help_text="Необязательное поле. Введите ваш номер телефона.",
+    )
+    city = models.CharField(max_length=30, blank=True, null=True, verbose_name="Город")
+    avatar = models.ImageField(
+        upload_to="avatar/", blank=True, null=True, verbose_name="Аватар", help_text="Загрузите изображение."
+    )
 
-    USERNAME_FIELD = 'email'
+    USERNAME_FIELD = "email"
     REQUIRED_FIELDS = []
 
     class Meta:

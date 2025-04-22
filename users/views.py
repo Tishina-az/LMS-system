@@ -15,8 +15,12 @@ class PaymentListAPIView(generics.ListAPIView):
     serializer_class = PaymentSerializer
     queryset = Payment.objects.all()
     filter_backends = [OrderingFilter, DjangoFilterBackend]
-    ordering_fields = ('date',)
-    filterset_fields = ('paid_course', 'paid_lesson', 'method',)
+    ordering_fields = ("date",)
+    filterset_fields = (
+        "paid_course",
+        "paid_lesson",
+        "method",
+    )
 
 
 class UserViewSet(ViewSet):
@@ -26,7 +30,7 @@ class UserViewSet(ViewSet):
 
     def get_serializer_class(self):
         """Выбор сериализатора (UserCreateSerializer или UserDetailSerializer),
-         в зависимости от текущего действия (action)."""
+        в зависимости от текущего действия (action)."""
         if self.action in ["create", "update", "partial_update"]:
             return UserCreateSerializer
         return UserDetailSerializer

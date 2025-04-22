@@ -7,7 +7,7 @@ from users.models import Payment, User
 from users.serializers import PaymentSerializer, UserCreateSerializer, UserDetailSerializer
 
 
-class CourseListAPIView(generics.ListAPIView):
+class PaymentListAPIView(generics.ListAPIView):
     """API endpoint для получения списка всех платежей."""
 
     serializer_class = PaymentSerializer

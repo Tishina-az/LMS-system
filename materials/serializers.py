@@ -4,7 +4,6 @@ from rest_framework.fields import SerializerMethodField
 from materials.models import Course, Lesson
 
 
-
 class LessonSerializer(serializers.ModelSerializer):
 
     class Meta:

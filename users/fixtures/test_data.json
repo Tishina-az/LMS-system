@@ -1,0 +1,104 @@
+[
+    {
+        "model": "users.user",
+        "pk": 1,
+        "fields": {
+            "password": "pbkdf2_sha256$260000$HASH...",
+            "last_login": null,
+            "is_superuser": false,
+            "username": "test_user1",
+            "first_name": "Иван",
+            "last_name": "Иванов",
+            "email": "user1@example.com",
+            "is_staff": false,
+            "is_active": true,
+            "date_joined": "2023-01-01T12:00:00Z",
+            "phone": "+79123456789",
+            "city": "Москва",
+            "avatar": ""
+        }
+    },
+    {
+        "model": "users.user",
+        "pk": 2,
+        "fields": {
+            "password": "pbkdf2_sha256$260000$HASH...",
+            "last_login": null,
+            "is_superuser": false,
+            "username": "test_user2",
+            "first_name": "Мария",
+            "last_name": "Петрова",
+            "email": "user2@example.com",
+            "is_staff": false,
+            "is_active": true,
+            "date_joined": "2023-01-02T12:00:00Z",
+            "phone": "+79234567890",
+            "city": "Санкт-Петербург",
+            "avatar": ""
+        }
+    },
+    {
+        "model": "materials.course",
+        "pk": 1,
+        "fields": {
+            "title": "Python для начинающих",
+            "preview": "",
+            "description": "Базовый курс программирования на Python"
+        }
+    },
+    {
+        "model": "materials.course",
+        "pk": 2,
+        "fields": {
+            "title": "Django: продвинутый уровень",
+            "preview": "",
+            "description": "Профессиональная разработка на Django"
+        }
+    },
+    {
+        "model": "materials.lesson",
+        "pk": 1,
+        "fields": {
+            "title": "Введение в Python",
+            "preview": "",
+            "description": "Основы синтаксиса Python",
+            "link": "https://youtube.com/python_intro",
+            "course": 1
+        }
+    },
+    {
+        "model": "materials.lesson",
+        "pk": 2,
+        "fields": {
+            "title": "Установка Django",
+            "preview": "",
+            "description": "Настройка окружения для Django",
+            "link": "https://youtube.com/django_setup",
+            "course": 2
+        }
+    },
+    {
+        "model": "users.payment",
+        "pk": 1,
+        "fields": {
+            "user": 1,
+            "date": "2023-01-10T14:30:00Z",
+            "paid_course": 1,
+            "paid_lesson": null,
+            "amount": 15000.00,
+            "method": "transfer"
+        }
+    },
+    {
+        "model": "users.payment",
+        "pk": 2,
+        "fields": {
+            "user": 2,
+            "date": "2023-01-15T10:15:00Z",
+            "paid_course": null,
+            "paid_lesson": 2,
+            "amount": 5000.00,
+            "method": "cash"
+        }
+    }
+]

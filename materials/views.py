@@ -2,6 +2,7 @@ from rest_framework import generics, viewsets
 
 from materials.models import Course, Lesson
 from materials.serializers import CourseSerializer, LessonSerializer
+from users.permissions import IsModerator
 
 
 class CourseViewSet(viewsets.ModelViewSet):
@@ -10,18 +11,27 @@ class CourseViewSet(viewsets.ModelViewSet):
     serializer_class = CourseSerializer
     queryset = Course.objects.all()
 
+    def get_permissions(self):
+        if self.action in ["create", "destroy"]:
+            self.permission_classes = [~IsModerator]
+        else:
+            self.permission_classes = [IsModerator]
+        return super().get_permissions()
+
 
 class LessonListAPIView(generics.ListAPIView):
     """API endpoint для получения списка всех уроков."""
 
     serializer_class = LessonSerializer
     queryset = Lesson.objects.all()
+    permission_classes = [IsModerator]
 
 
 class LessonCreateAPIView(generics.CreateAPIView):
     """API endpoint для создания нового урока."""
 
     serializer_class = LessonSerializer
+    permission_classes = [~IsModerator]
 
 
 class LessonRetrieveAPIView(generics.RetrieveAPIView):
@@ -29,6 +39,7 @@ class LessonRetrieveAPIView(generics.RetrieveAPIView):
 
     serializer_class = LessonSerializer
     queryset = Lesson.objects.all()
+    permission_classes = [IsModerator]
 
 
 class LessonUpdateAPIView(generics.UpdateAPIView):
@@ -36,9 +47,11 @@ class LessonUpdateAPIView(generics.UpdateAPIView):
 
     serializer_class = LessonSerializer
     queryset = Lesson.objects.all()
+    permission_classes = [IsModerator]
 
 
 class LessonDestroyAPIView(generics.DestroyAPIView):
     """API endpoint для удаления урока."""
 
     queryset = Lesson.objects.all()
+    permission_classes = [~IsModerator]

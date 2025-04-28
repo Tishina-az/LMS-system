@@ -31,7 +31,7 @@ class CourseSerializer(serializers.ModelSerializer):
     """Сериализатор курса с дополнительными полями."""
 
     lessons_count = SerializerMethodField()
-    lessons = CourseLessonSerializer(many=True)
+    lessons = CourseLessonSerializer(many=True, read_only=True)
 
     def get_lessons_count(self, course):
         """Возвращает количество уроков в курсе."""

@@ -1,7 +1,9 @@
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import generics
+from rest_framework.decorators import action
 from rest_framework.filters import OrderingFilter
 from rest_framework.generics import get_object_or_404
+from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.viewsets import ViewSet
 
@@ -31,12 +33,18 @@ class UserViewSet(ViewSet):
     def get_serializer_class(self):
         """Выбор сериализатора (UserCreateSerializer или UserDetailSerializer),
         в зависимости от текущего действия (action)."""
-        if self.action in ["create", "update", "partial_update"]:
+        if self.action in ["create", "update", "partial_update", "register"]:
             return UserCreateSerializer
         return UserDetailSerializer
 
-    def create(self, request):
-        """Создание пользователя."""
+    @action(
+        detail=False,
+        methods=['post'],
+        permission_classes=[AllowAny],
+        authentication_classes=[]
+    )
+    def register(self, request):
+        """Создание (регистрация) пользователя."""
         serializer = self.get_serializer_class()(data=request.data)
         serializer.is_valid(raise_exception=True)
         user = serializer.save()

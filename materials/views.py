@@ -18,6 +18,11 @@ class CourseViewSet(viewsets.ModelViewSet):
             self.permission_classes = [IsModerator]
         return super().get_permissions()
 
+    def perform_create(self, serializer):
+        course = serializer.save()
+        course.owner = self.request.user
+        course.save()
+
 
 class LessonListAPIView(generics.ListAPIView):
     """API endpoint для получения списка всех уроков."""
@@ -32,6 +37,9 @@ class LessonCreateAPIView(generics.CreateAPIView):
 
     serializer_class = LessonSerializer
     permission_classes = [~IsModerator]
+
+    def perform_create(self, serializer):
+        serializer.save(owner = self.request.user)
 
 
 class LessonRetrieveAPIView(generics.RetrieveAPIView):

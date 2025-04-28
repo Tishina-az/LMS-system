@@ -1,6 +1,5 @@
+from django.conf import settings
 from django.db import models
-
-# from users.models import User
 
 
 class Course(models.Model):
@@ -12,7 +11,9 @@ class Course(models.Model):
     )
     description = models.TextField(verbose_name="Описание")
 
-    # owner = models.ForeignKey(User, on_delete=models.CASCADE, related_name="courses", verbose_name="Владелец")
+    owner = models.ForeignKey(
+        settings.AUTH_USER_MODEL, on_delete=models.CASCADE, null=True, related_name="courses", verbose_name="Владелец"
+    )
 
     def __str__(self):
         return f"Курс: {self.title}"
@@ -39,7 +40,9 @@ class Lesson(models.Model):
     )
     course = models.ForeignKey(Course, on_delete=models.CASCADE, related_name="lessons", verbose_name="Курс")
 
-    # owner = models.ForeignKey(User, on_delete=models.CASCADE, related_name="lessons", verbose_name="Владелец")
+    owner = models.ForeignKey(
+        settings.AUTH_USER_MODEL, on_delete=models.CASCADE, null=True, related_name="lessons", verbose_name="Владелец"
+    )
 
     def __str__(self):
         return f"Урок: {self.title}"

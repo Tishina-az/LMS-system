@@ -1,3 +1,4 @@
+from django.contrib.auth.hashers import make_password
 from rest_framework import serializers
 
 from users.models import Payment, User
@@ -27,6 +28,7 @@ class UserCreateSerializer(serializers.ModelSerializer):
         fields = (
             "email",
             "password",
+            "username",
             "first_name",
             "last_name",
             "phone",
@@ -34,6 +36,10 @@ class UserCreateSerializer(serializers.ModelSerializer):
             "avatar",
         )
         extra_kwargs = {"password": {"write_only": True}}
+
+    def create(self, validated_data):
+        validated_data['password'] = make_password(validated_data['password'])
+        return super().create(validated_data)
 
 
 class UserDetailSerializer(serializers.ModelSerializer):
@@ -46,10 +52,10 @@ class UserDetailSerializer(serializers.ModelSerializer):
         fields = (
             "id",
             "email",
+            "username",
             "first_name",
             "last_name",
             "phone",
             "city",
-            "avatar",
             "payments",
         )

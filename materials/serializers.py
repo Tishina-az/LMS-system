@@ -10,6 +10,7 @@ class LessonSerializer(serializers.ModelSerializer):
     class Meta:
         model = Lesson
         fields = "__all__"
+        read_only_fields = ("owner",)
 
 
 class CourseLessonSerializer(serializers.ModelSerializer):
@@ -30,7 +31,7 @@ class CourseSerializer(serializers.ModelSerializer):
     """Сериализатор курса с дополнительными полями."""
 
     lessons_count = SerializerMethodField()
-    lessons = CourseLessonSerializer(many=True)
+    lessons = CourseLessonSerializer(many=True, read_only=True)
 
     def get_lessons_count(self, course):
         """Возвращает количество уроков в курсе."""
@@ -42,7 +43,8 @@ class CourseSerializer(serializers.ModelSerializer):
             "id",
             "title",
             "description",
+            "owner",
             "lessons_count",
             "lessons",
         )
-        read_only_fields = ("id", "lessons_count", "lessons")
+        read_only_fields = ("id", "owner", "lessons_count", "lessons")

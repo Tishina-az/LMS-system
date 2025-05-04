@@ -24,7 +24,7 @@ class User(AbstractUser):
         return self.email
 
     USERNAME_FIELD = "email"
-    REQUIRED_FIELDS = ['username']
+    REQUIRED_FIELDS = ["username"]
 
     class Meta:
         verbose_name = "Пользователь"
@@ -77,11 +77,12 @@ class Subscribe(models.Model):
 
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="subscribes", verbose_name="Пользователь")
     course = models.ForeignKey(Course, on_delete=models.CASCADE, related_name="subscribes", verbose_name="Курс")
-    is_active = models.BooleanField(default=True, verbose_name="Статус подписки")
+    created_at = models.DateTimeField(auto_now_add=True, verbose_name="Дата подписки")
 
     def __str__(self):
-        return f"Подписка пользователя {self.user} на курс {self.course} - {"Активна" if self.is_active == True else "Не активна"}"
+        return f"Пользователь {self.user} подписан на {self.course}."
 
     class Meta:
         verbose_name = "Подписка"
         verbose_name_plural = "Подписки"
+        unique_together = ('user', 'course',)

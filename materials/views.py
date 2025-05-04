@@ -1,8 +1,12 @@
-from rest_framework import generics, viewsets
+from rest_framework import generics, viewsets, status
+from rest_framework.generics import get_object_or_404
 from rest_framework.permissions import IsAuthenticated
+from rest_framework.response import Response
+from rest_framework.views import APIView
 
 from materials.models import Course, Lesson
 from materials.serializers import CourseSerializer, LessonSerializer
+from users.models import Subscribe
 from users.permissions import IsModerator, IsOwner
 
 
@@ -27,6 +31,31 @@ class CourseViewSet(viewsets.ModelViewSet):
         course.save()
 
 
+class SubscribeAPIView(APIView):
+    """API endpoint для управления подписками пользователя на курсы."""
+
+    permission_classes = (IsAuthenticated,)
+
+    def post(self, *args, **kwargs):
+        user = self.request.user
+        course_id = self.request.data.get("id")
+
+        if not course_id:
+            return Response({"error": "Введите корректный id курса."}, status=status.HTTP_400_BAD_REQUEST)
+
+        course = get_object_or_404(Course, id=course_id)
+        subscribe = Subscribe.objects.filter(user=user, course=course)
+
+        if subscribe.exists():
+            subscribe.delete()
+            message = "Подписка удалена"
+        else:
+            Subscribe.objects.create(user=user, course=course)
+            message = "Подписка добавлена"
+
+        return Response({"message": message}, status=status.HTTP_200_OK)
+
+
 class LessonListAPIView(generics.ListAPIView):
     """API endpoint для получения списка всех уроков."""
 
@@ -41,7 +70,7 @@ class LessonCreateAPIView(generics.CreateAPIView):
     permission_classes = [~IsModerator, IsAuthenticated]
 
     def perform_create(self, serializer):
-        serializer.save(owner = self.request.user)
+        serializer.save(owner=self.request.user)
 
 
 class LessonRetrieveAPIView(generics.RetrieveAPIView):

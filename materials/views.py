@@ -5,6 +5,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from materials.models import Course, Lesson
+from materials.paginators import CoursePaginator, LessonPaginator
 from materials.serializers import CourseSerializer, LessonSerializer
 from users.models import Subscribe
 from users.permissions import IsModerator, IsOwner
@@ -15,6 +16,7 @@ class CourseViewSet(viewsets.ModelViewSet):
 
     serializer_class = CourseSerializer
     queryset = Course.objects.all()
+    pagination_class = CoursePaginator
 
     def get_permissions(self):
         if self.action == "create":
@@ -61,6 +63,7 @@ class LessonListAPIView(generics.ListAPIView):
 
     serializer_class = LessonSerializer
     queryset = Lesson.objects.all()
+    pagination_class = LessonPaginator
 
 
 class LessonCreateAPIView(generics.CreateAPIView):

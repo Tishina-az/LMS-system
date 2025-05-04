@@ -12,5 +12,5 @@ class LinkValidator:
     def __call__(self, value):
         link = re.compile(r'^(https?:\/\/)?(www\.)?(youtube\.com)\/.+')
         tmp_link = dict(value).get(self.field)
-        if not bool(link.match(tmp_link)):
+        if tmp_link and not bool(link.match(tmp_link)):
             raise ValidationError('Введите корректную ссылку на YouTube (youtube.com).')

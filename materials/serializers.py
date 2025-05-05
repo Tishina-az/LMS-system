@@ -2,6 +2,8 @@ from rest_framework import serializers
 from rest_framework.fields import SerializerMethodField
 
 from materials.models import Course, Lesson
+from materials.validators import LinkValidator
+from users.models import Subscribe
 
 
 class LessonSerializer(serializers.ModelSerializer):
@@ -11,6 +13,7 @@ class LessonSerializer(serializers.ModelSerializer):
         model = Lesson
         fields = "__all__"
         read_only_fields = ("owner",)
+        validators = [LinkValidator(field="link")]
 
 
 class CourseLessonSerializer(serializers.ModelSerializer):
@@ -25,6 +28,19 @@ class CourseLessonSerializer(serializers.ModelSerializer):
             "link",
         )
         read_only_fields = ("id",)
+        validators = [LinkValidator(field="link")]
+
+
+class SubscribeSerializer(serializers.ModelSerializer):
+    """Сериализатор подписки на курс."""
+
+    class Mets:
+        model = Subscribe
+        fields = "__all__"
+        read_only_fields = (
+            "user",
+            "created_at",
+        )
 
 
 class CourseSerializer(serializers.ModelSerializer):
@@ -32,10 +48,7 @@ class CourseSerializer(serializers.ModelSerializer):
 
     lessons_count = SerializerMethodField()
     lessons = CourseLessonSerializer(many=True, read_only=True)
-
-    def get_lessons_count(self, course):
-        """Возвращает количество уроков в курсе."""
-        return Lesson.objects.filter(course=course).count()
+    is_subscribed = serializers.SerializerMethodField(read_only=True)
 
     class Meta:
         model = Course
@@ -46,5 +59,17 @@ class CourseSerializer(serializers.ModelSerializer):
             "owner",
             "lessons_count",
             "lessons",
+            "is_subscribed",
         )
         read_only_fields = ("id", "owner", "lessons_count", "lessons")
+
+    def get_lessons_count(self, course):
+        """Возвращает количество уроков в курсе."""
+        return Lesson.objects.filter(course=course).count()
+
+    def get_is_subscribed(self, obj):
+        """Возвращает статус подписки текущего пользователя на данный курс"""
+        request = self.context.get("request")
+        if request and request.user.is_authenticated:
+            return Subscribe.objects.filter(user=request.user, course=obj).exists()
+        return False

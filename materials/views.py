@@ -1,3 +1,4 @@
+from drf_spectacular.utils import extend_schema_view, extend_schema, OpenApiExample
 from rest_framework import generics, viewsets, status
 from rest_framework.generics import get_object_or_404
 from rest_framework.permissions import IsAuthenticated
@@ -11,6 +12,44 @@ from users.models import Subscribe
 from users.permissions import IsModerator, IsOwner
 
 
+@extend_schema_view(
+    list=extend_schema(
+        summary="Получение списка курсов",
+        description="Получение списка курсов"
+    ),
+    retrieve=extend_schema(
+        summary="Получение отдельного курса с детализацией",
+        description="Получение отдельного курса с детализацией"
+    ),
+    create=extend_schema(
+        summary="Создание нового курса",
+        description="Создание нового курса",
+        examples=[
+                OpenApiExample(
+                    "Course example",
+                    description="Test example for the course",
+                    value=
+                    {
+                        "title": "New course",
+                        "description": "Some text description for course"
+                    },
+                    status_codes=[str(status.HTTP_200_OK)],
+                ),
+            ],
+    ),
+    update=extend_schema(
+        summary="Изменение курса",
+        description="Изменение курса"
+    ),
+    partial_update=extend_schema(
+        summary="Частичное изменение курса",
+        description="Частичное изменение курса"
+    ),
+    destroy=extend_schema(
+        summary="Удаление курса",
+        description="Удаление курса"
+    ),
+)
 class CourseViewSet(viewsets.ModelViewSet):
     """Реализация CRUD для курса, с использованием Viewsets."""
 

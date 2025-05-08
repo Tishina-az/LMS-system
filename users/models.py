@@ -42,7 +42,9 @@ class Payment(models.Model):
         (TRANSFER, "Перевод на счет"),
     ]
 
-    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="payments", verbose_name="Пользователь")
+    user = models.ForeignKey(
+        User, on_delete=models.CASCADE, blank=True, null=True, related_name="payments", verbose_name="Пользователь"
+    )
     date = models.DateTimeField(auto_now_add=True, verbose_name="Дата платежа")
     paid_course = models.ForeignKey(
         Course,
@@ -62,6 +64,8 @@ class Payment(models.Model):
     )
     amount = models.DecimalField(max_digits=15, decimal_places=2, verbose_name="Сумма оплаты")
     method = models.CharField(max_length=8, choices=PAYMENT_METHOD, default=TRANSFER, verbose_name="Способ оплаты")
+    session_id = models.CharField(max_length=255, blank=True, null=True, verbose_name="Id сессии")
+    link = models.URLField(max_length=400, blank=True, null=True, verbose_name="Ссылка на оплату")
 
     def __str__(self):
         return f"{self.user} - {self.paid_course if self.paid_course else self.paid_lesson} - {self.amount}."
@@ -85,4 +89,7 @@ class Subscribe(models.Model):
     class Meta:
         verbose_name = "Подписка"
         verbose_name_plural = "Подписки"
-        unique_together = ('user', 'course',)
+        unique_together = (
+            "user",
+            "course",
+        )

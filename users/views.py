@@ -9,6 +9,7 @@ from rest_framework.viewsets import ViewSet
 
 from users.models import Payment, User
 from users.serializers import PaymentSerializer, UserCreateSerializer, UserDetailSerializer
+from users.services import create_stripe_product, create_stripe_price, create_stripe_session
 
 
 class PaymentListAPIView(generics.ListAPIView):
@@ -25,6 +26,27 @@ class PaymentListAPIView(generics.ListAPIView):
     )
 
 
+class PaymentCreateAPIView(generics.CreateAPIView):
+    """API endpoint для создания платежей."""
+
+    serializer_class = PaymentSerializer
+    queryset = Payment.objects.all()
+
+    def perform_create(self, serializer):
+        payment = serializer.save(user=self.request.user)
+        if payment.method == Payment.TRANSFER:
+            # Для безналичной оплаты создаем stripe-сессию
+            product = create_stripe_product(payment)
+            price = create_stripe_price(payment.amount, product)
+            session_id, link = create_stripe_session(price)
+            payment.session_id = session_id
+            payment.link = link
+            payment.save()
+        else:
+            # Для наличной оплаты можно реализовать дополнительную логику
+            pass
+
+
 class UserViewSet(ViewSet):
     """Реализация CRUD для пользователя, с использованием Viewsets."""
 
@@ -37,12 +59,7 @@ class UserViewSet(ViewSet):
             return UserCreateSerializer
         return UserDetailSerializer
 
-    @action(
-        detail=False,
-        methods=['post'],
-        permission_classes=[AllowAny],
-        authentication_classes=[]
-    )
+    @action(detail=False, methods=["post"], permission_classes=[AllowAny], authentication_classes=[])
     def register(self, request):
         """Создание (регистрация) пользователя."""
         serializer = self.get_serializer_class()(data=request.data)

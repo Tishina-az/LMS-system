@@ -1,4 +1,6 @@
 import stripe
+from rest_framework.reverse import reverse
+
 from config import settings
 
 stripe.api_key = settings.STRIPE_API_KEY
@@ -22,12 +24,24 @@ def create_stripe_price(amount, product):
     return price
 
 
-def create_stripe_session(price):
+def create_stripe_session(price, payment_id):
     """Создает сессию в stripe для оплаты."""
 
     session = stripe.checkout.Session.create(
-        success_url="https://127.0.0.1:8000/",
+        success_url=f"http://127.0.0.1:8000/{reverse("users:payment_status", kwargs={'id': payment_id})}",
         line_items=[{"price": price.get("id"), "quantity": 1}],
         mode="payment",
     )
     return session.get("id"), session.get("url")
+
+
+def get_retrieve_stripe_session(session_id):
+    """Получает статус(детализацию) платежа в stripe-сессии."""
+
+    session = stripe.checkout.Session.retrieve(session_id)
+    return {
+        "status": session.status,
+        "payment_status": session.payment_status,
+        "amount_total": session.amount_total / 100,
+        "currency": session.currency,
+    }

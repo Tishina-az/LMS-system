@@ -8,7 +8,7 @@ from rest_framework.response import Response
 from rest_framework.viewsets import ViewSet
 
 from users.models import Payment, User
-from users.serializers import PaymentSerializer, UserCreateSerializer, UserDetailSerializer
+from users.serializers import PaymentSerializer, UserCreateSerializer, UserDetailSerializer, PaymentStatusSerializer
 from users.services import create_stripe_product, create_stripe_price, create_stripe_session
 
 
@@ -38,13 +38,21 @@ class PaymentCreateAPIView(generics.CreateAPIView):
             # Для безналичной оплаты создаем stripe-сессию
             product = create_stripe_product(payment)
             price = create_stripe_price(payment.amount, product)
-            session_id, link = create_stripe_session(price)
+            session_id, link = create_stripe_session(price, payment.id)
             payment.session_id = session_id
             payment.link = link
             payment.save()
         else:
             # Для наличной оплаты можно реализовать дополнительную логику
             pass
+
+
+class PaymentStatusAPIView(generics.RetrieveAPIView):
+    """API endpoint для проверки статуса платежа в Stripe."""
+
+    queryset = Payment.objects.all()
+    serializer_class = PaymentStatusSerializer
+    lookup_field = "id"
 
 
 class UserViewSet(ViewSet):
